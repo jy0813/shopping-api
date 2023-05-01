@@ -11,7 +11,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
         type: 'postgres',
         host: configService.get('POSTGRES_HOST'),
         port: configService.get('POSTGRES_PORT'),
-        userName: configService.get('POSTGRES_USER'),
+        username: configService.get('POSTGRES_USER'),
         password: configService.get('POSTGRES_PASSWORD'),
         database: configService.get('POSTGRES_DATABASE'),
         entities: [
