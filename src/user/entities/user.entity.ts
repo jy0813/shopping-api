@@ -1,13 +1,15 @@
-import { Column, Entity } from "typeorm";
+import { BeforeInsert, Column, Entity } from "typeorm";
 import { BaseEntity } from "../../common/entity/base.entity";
+import { InternalServerErrorException } from "@nestjs/common";
+import * as bcrypt from 'bcryptjs';
 
 @Entity()
 export class User extends BaseEntity {
 
-  @Column()
+  @Column( {unique: true })
   public userName: string;
 
-  @Column()
+  @Column({ unique: true })
   public email: string;
 
   @Column()
@@ -22,4 +24,18 @@ export class User extends BaseEntity {
     default: false
   })
   public isEvent: boolean;
+
+
+  //db에 넣기 직전에 실행되는 함수 암호
+  @BeforeInsert()
+  async hashPassword() {
+    try {
+      const salt = await bcrypt.genSalt(10);
+      // 위에 있는 password 를 bcrypt 를 통하여 hash 하겠다.
+      this.password = await bcrypt.hash(this.password, salt);
+    }
+    catch (err) {
+      throw new InternalServerErrorException();
+    }
+  }
 }

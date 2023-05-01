@@ -1,34 +1,23 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { CreateUserDto } from "../user/dto/create-user.dto";
+import { LoginUserDto } from "../user/dto/login-user.dto";
+
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService
+  ) {}
 
-  @Post()
-  create(@Body() createAuthDto: CreateAuthDto) {
-    return this.authService.create(createAuthDto);
+  @Post('/signup')
+  // 사용자 body(입력 값)은 createUserDto에 입력값을 사용한다.
+  async registerUser(@Body() createUserDto: CreateUserDto) {
+    return await this.authService.createUserByEmail(createUserDto);
   }
 
-  @Get()
-  findAll() {
-    return this.authService.findAll();
-  }
+  @Post('/login')
+  async loggedInUser(@Body() loginUserDto: LoginUserDto) {
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.authService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-    return this.authService.update(+id, updateAuthDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.authService.remove(+id);
   }
 }
