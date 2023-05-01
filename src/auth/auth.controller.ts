@@ -18,6 +18,12 @@ export class AuthController {
 
   @Post('/login')
   async loggedInUser(@Body() loginUserDto: LoginUserDto) {
-
+    const user = await this.authService.getAuthenticatedUser(
+      loginUserDto.email,
+      loginUserDto.password,
+    );
+    // token 불러오기
+    const token = await this.authService.generateAccessToken(user.id);
+    return { user, token };
   }
 }
