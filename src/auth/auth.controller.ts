@@ -1,14 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateUserDto } from "../user/dto/create-user.dto";
-import { LoginUserDto } from "../user/dto/login-user.dto";
-
+import { CreateUserDto } from '../user/dto/create-user.dto';
+import { LoginUserDto } from '../user/dto/login-user.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Post('/signup')
   // 사용자 body(입력 값)은 createUserDto에 입력값을 사용한다.
