@@ -8,8 +8,8 @@ import {
 
 export class CreateUserDto {
   @IsString()
-  @MinLength(7)
-  @MaxLength(18)
+  @MinLength(2)
+  @MaxLength(15)
   userName: string;
 
   @IsEmail()
@@ -17,9 +17,10 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   @IsString()
-  @MinLength(7)
-  @MaxLength(18)
+  @MinLength(8)
   password: string;
+
   isMarketing: boolean;
+
   isEvent: boolean;
 }
