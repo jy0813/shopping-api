@@ -6,6 +6,7 @@ import { LocalAuthGuard } from './guard/local-auth.guard';
 import { RequestWithUser } from './interfaces/requestWithUser';
 import JwtAuthGuard from './guard/jwt-auth.guard';
 import { UserService } from '../user/user.service';
+import { DuplicateEmailDto } from '../user/dto/duplicate-email.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -13,6 +14,13 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly userService: UserService,
   ) {}
+
+  @Post('/duplicate/email')
+  async duplicateCheckEmail(@Body() duplicateEmailDto: DuplicateEmailDto) {
+    return await this.userService.duplicateFindUserEmail(
+      duplicateEmailDto.email,
+    );
+  }
 
   @Post('/signup')
   // 사용자 body(입력 값)은 createUserDto에 입력값을 사용한다.
@@ -65,7 +73,6 @@ export class AuthController {
 
   @Post('/email')
   async sendEmail(@Body('email') email: string) {
-    await this.userService.findUserByEmail(email);
     const number = await this.authService.sendEmailOfRendomNumber(email);
     return { number };
   }

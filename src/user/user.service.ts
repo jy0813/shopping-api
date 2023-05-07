@@ -25,6 +25,15 @@ export class UserService {
     return user;
   }
 
+  //회원가입 user email check하는 함수
+  async duplicateFindUserEmail(email: string) {
+    const user = await this.userRepo.findOneBy({ email });
+    if (user) {
+      throw new HttpException('Duplicate Email', HttpStatus.BAD_REQUEST);
+    }
+    return 'available email';
+  }
+
   // findOnebye  - object로 return
   // findBy - array return
   async findUserById(id: string) {
