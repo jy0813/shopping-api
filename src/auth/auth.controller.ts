@@ -17,7 +17,10 @@ export class AuthController {
   @Post('/signup')
   // 사용자 body(입력 값)은 createUserDto에 입력값을 사용한다.
   async registerUser(@Body() createUserDto: CreateUserDto) {
-    await this.authService.sendEmailConfirm(createUserDto.email);
+    await this.authService.sendEmailConfirm(
+      createUserDto.email,
+      '이메일 confirm',
+    );
     return await this.authService.createUserByEmail(createUserDto);
   }
 
@@ -31,7 +34,7 @@ export class AuthController {
   @Post('/email/resend')
   async resendEmail(@Body('email') email: string) {
     await this.userService.findUserByEmail(email);
-    return await this.authService.sendEmailConfirm(email);
+    return await this.authService.sendEmailConfirm(email, '이메일 재전송');
   }
 
   // @UseGuards(AuthGuard('local')
@@ -62,6 +65,7 @@ export class AuthController {
 
   @Post('/email')
   async sendEmail(@Body('email') email: string) {
+    await this.userService.findUserByEmail(email);
     const number = await this.authService.sendEmailOfRendomNumber(email);
     return { number };
   }
@@ -70,5 +74,13 @@ export class AuthController {
   async resendEmailOfNumber(@Body('email') email: string) {
     const number = await this.authService.sendEmailOfRendomNumber(email);
     return { number };
+  }
+
+  // password 변경
+  // 1. email 보내기 (매개변수 : email) token 생성 with email In payload (payload 안에 email 담기)
+
+  @Post('/find/password')
+  async resetPassword(@Body('email') email: string) {
+    return await this.authService.sendEmailConfirm(email, '비밀번호 변경');
   }
 }

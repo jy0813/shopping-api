@@ -73,7 +73,7 @@ export class AuthService {
     });
   }
 
-  public sendEmailConfirm(email: string) {
+  public sendEmailConfirm(email: string, title: string) {
     const payload: VerificationTokenPayloadInterface = { email };
     const token = this.jwtService.sign(payload, {
       secret: this.configService.get('JWT_VERIFICATION_TOKEN_SECRET'),
@@ -88,7 +88,7 @@ export class AuthService {
 
     return this.emailService.sendMail({
       to: email,
-      subject: 'Email Confirmation',
+      subject: `${title}`,
       html: emailConfirm('진재윤', url),
     });
   }
