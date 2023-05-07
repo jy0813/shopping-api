@@ -93,6 +93,16 @@ export class AuthService {
     });
   }
 
+  public async sendEmailOfRendomNumber(email: string) {
+    const randomNumber = Math.floor(Math.random() * 1000000);
+    await this.emailService.sendMail({
+      to: email,
+      subject: 'Email Confirmaiton',
+      text: `${randomNumber}`,
+    });
+    return randomNumber;
+  }
+
   public async decodeConfirmaitonToken(token: string) {
     try {
       const payload = await this.jwtService.verify(token, {

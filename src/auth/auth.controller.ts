@@ -62,7 +62,13 @@ export class AuthController {
 
   @Post('/email')
   async sendEmail(@Body('email') email: string) {
-    await this.authService.sendEmail(email);
-    return 'successful send email';
+    const number = await this.authService.sendEmailOfRendomNumber(email);
+    return { number };
+  }
+
+  @Post('/email/resend/number')
+  async resendEmailOfNumber(@Body('email') email: string) {
+    const number = await this.authService.sendEmailOfRendomNumber(email);
+    return { number };
   }
 }
