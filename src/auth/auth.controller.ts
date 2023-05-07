@@ -17,6 +17,13 @@ export class AuthController {
     return await this.authService.createUserByEmail(createUserDto);
   }
 
+  @Post('/email/confirm')
+  async emailConfirm(@Body('token') token: string) {
+    const email = await this.authService.decodeConfirmaitonToken(token);
+    // isEmailConfirm false -> true
+    return this.authService.confirmEmail(email);
+  }
+
   // @UseGuards(AuthGuard('local')
   @UseGuards(LocalAuthGuard)
   @Post('/login')

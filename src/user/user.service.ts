@@ -49,4 +49,14 @@ export class UserService {
     const users = await this.userRepo.find();
     return users;
   }
+
+  async markEmailAsConfirmed(email: string) {
+    // update 대상자 선택
+    return this.userRepo.update(
+      { email },
+      {
+        isEmailConfirm: true,
+      },
+    );
+  }
 }
