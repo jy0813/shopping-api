@@ -4,6 +4,8 @@ import { CreateUserDto } from '../user/dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { EmailService } from '../email/email.service';
+import { emailConfirm } from '../common/emailTemplates/emailConfirm';
 
 @Injectable()
 export class AuthService {
@@ -13,6 +15,7 @@ export class AuthService {
     // 토큰 생성및 조회에 사용
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly emailService: EmailService,
   ) {}
 
   async createUserByEmail(creatUserDto: CreateUserDto) {
@@ -53,5 +56,13 @@ export class AuthService {
       )}s`,
     });
     return token;
+  }
+
+  public sendEmail(email: string) {
+    return this.emailService.sendMail({
+      to: email,
+      subject: 'Email 테스트',
+      html: emailConfirm('진재윤'),
+    });
   }
 }

@@ -25,12 +25,6 @@ export class AuthController {
     return { user, token };
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Get('/userInfo')
-  async getUserInfo(@Req() req: RequestWithUser) {
-    return req.user;
-  }
-
   // @Post('/login')
   // async loggedInUser(@Body() loginUserDto: LoginUserDto) {
   //   const user = await this.authService.getAuthenticatedUser(
@@ -41,4 +35,16 @@ export class AuthController {
   //   const token = await this.authService.generateAccessToken(user.id);
   //   return { user, token };
   // }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/userInfo')
+  async getUserInfo(@Req() req: RequestWithUser) {
+    return req.user;
+  }
+
+  @Post('/email')
+  async sendEmail(@Body('email') email: string) {
+    await this.authService.sendEmail(email);
+    return 'successful send email';
+  }
 }

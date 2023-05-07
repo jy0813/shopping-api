@@ -6,6 +6,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
 import { LocalAuthStrategy } from './strategies/local-auth.strategy';
 import { JwtAuthStrategy } from './strategies/jwt-auth.strategy';
+import { EmailModule } from '../email/email.module';
 
 @Module({
   // user 에 관한 entity 및 service import 로 이용가능
@@ -15,6 +16,8 @@ import { JwtAuthStrategy } from './strategies/jwt-auth.strategy';
     JwtModule.register({}),
     // 환경변수 사용
     ConfigModule,
+    // email 임포트
+    EmailModule,
   ],
   controllers: [AuthController],
   // 검증할때 사용하는 함수를 등록

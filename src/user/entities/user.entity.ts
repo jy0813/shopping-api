@@ -29,8 +29,8 @@ export class User extends BaseEntity {
   })
   public isEmailConfirm: boolean;
 
-  @Column()
-  public tempNumber: number;
+  // @Column()
+  // public tempNumber: number;
 
   //db에 넣기 직전에 실행되는 함수 암호
   @BeforeInsert()
