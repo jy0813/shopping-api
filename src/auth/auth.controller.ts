@@ -5,10 +5,14 @@ import { LoginUserDto } from '../user/dto/login-user.dto';
 import { LocalAuthGuard } from './guard/local-auth.guard';
 import { RequestWithUser } from './interfaces/requestWithUser';
 import JwtAuthGuard from './guard/jwt-auth.guard';
+import { UserService } from '../user/user.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly userService: UserService,
+  ) {}
 
   @Post('/signup')
   // 사용자 body(입력 값)은 createUserDto에 입력값을 사용한다.
@@ -22,6 +26,12 @@ export class AuthController {
     const email = await this.authService.decodeConfirmaitonToken(token);
     // isEmailConfirm false -> true
     return this.authService.confirmEmail(email);
+  }
+
+  @Post('/email/resend')
+  async resendEmail(@Body('email') email: string) {
+    await this.userService.findUserByEmail(email);
+    return await this.authService.sendEmailConfirm(email);
   }
 
   // @UseGuards(AuthGuard('local')
