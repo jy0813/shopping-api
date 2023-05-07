@@ -5,6 +5,7 @@ import { UserModule } from '../user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
 import { LocalAuthStrategy } from './strategies/local-auth.strategy';
+import { JwtAuthStrategy } from './strategies/jwt-auth.strategy';
 
 @Module({
   // user 에 관한 entity 및 service import 로 이용가능
@@ -17,6 +18,6 @@ import { LocalAuthStrategy } from './strategies/local-auth.strategy';
   ],
   controllers: [AuthController],
   // 검증할때 사용하는 함수를 등록
-  providers: [AuthService, LocalAuthStrategy],
+  providers: [AuthService, LocalAuthStrategy, JwtAuthStrategy],
 })
 export class AuthModule {}

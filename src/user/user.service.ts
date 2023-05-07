@@ -25,8 +25,10 @@ export class UserService {
     return user;
   }
 
+  // findOnebye  - object로 return
+  // findBy - array return
   async findUserById(id: string) {
-    const user = await this.userRepo.findBy({ id });
+    const user = await this.userRepo.findOneBy({ id });
     if (!user) {
       throw new HttpException(
         'User with this id does not exist',
