@@ -1,4 +1,4 @@
-export const emailConfirm = (companyName: string) =>
+export const emailConfirm = (companyName: string, url: string) =>
   `<!doctype html>
 <html>
   <head>
@@ -359,7 +359,7 @@ export const emailConfirm = (companyName: string) =>
                                 <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                                   <tbody>
                                     <tr>
-                                      <td> <a href="http://htmlemail.io" target="_blank">Call To Action</a> </td>
+                                      <td> <a href=${url} target="_blank">Call To Action</a> </td>
                                     </tr>
                                   </tbody>
                                 </table>

@@ -6,6 +6,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { EmailService } from '../email/email.service';
 import { emailConfirm } from '../common/emailTemplates/emailConfirm';
+import { VerificationTokenPayloadInterface } from './interfaces/verificationTokenPayload.interface';
 
 @Injectable()
 export class AuthService {
@@ -62,7 +63,27 @@ export class AuthService {
     return this.emailService.sendMail({
       to: email,
       subject: 'Email 테스트',
-      html: emailConfirm('진재윤'),
+      html: emailConfirm('진재윤', 'http://localhost:3000/'),
+    });
+  }
+
+  public sendEmailConfirm(email: string) {
+    const payload: VerificationTokenPayloadInterface = { email };
+    const token = this.jwtService.sign(payload, {
+      secret: this.configService.get('JWT_VERIFICATION_TOKEN_SECRET'),
+      expiresIn: `${this.configService.get(
+        'JWT_VERIFICATION_TOKEN_EXPIRATION_TIME',
+      )}s`,
+    });
+
+    const url = `${this.configService.get(
+      'FRONTEND_DEFAULT_URL',
+    )}/auth/email-confirm?token=${token}`;
+
+    return this.emailService.sendMail({
+      to: email,
+      subject: 'Email Confirmation',
+      html: emailConfirm('진재윤', url),
     });
   }
 }

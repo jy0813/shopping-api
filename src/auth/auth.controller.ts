@@ -13,6 +13,7 @@ export class AuthController {
   @Post('/signup')
   // 사용자 body(입력 값)은 createUserDto에 입력값을 사용한다.
   async registerUser(@Body() createUserDto: CreateUserDto) {
+    await this.authService.sendEmailConfirm(createUserDto.email);
     return await this.authService.createUserByEmail(createUserDto);
   }
 
