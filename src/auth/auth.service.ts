@@ -84,7 +84,7 @@ export class AuthService {
 
     const url = `${this.configService.get(
       'FRONTEND_DEFAULT_URL',
-    )}/auth/email-confirm?token=${token}`;
+    )}/auth/reset-pw?token=${token}`;
 
     return this.emailService.sendMail({
       to: email,

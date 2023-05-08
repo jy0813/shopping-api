@@ -6,7 +6,7 @@ import { LocalAuthGuard } from './guard/local-auth.guard';
 import { RequestWithUser } from './interfaces/requestWithUser';
 import JwtAuthGuard from './guard/jwt-auth.guard';
 import { UserService } from '../user/user.service';
-import { DuplicateEmailDto } from '../user/dto/duplicate-email.dto';
+import { EmailCheckDto } from '../user/dto/email-check.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -15,11 +15,16 @@ export class AuthController {
     private readonly userService: UserService,
   ) {}
 
+  //이메일 중복체크
   @Post('/duplicate/email')
-  async duplicateCheckEmail(@Body() duplicateEmailDto: DuplicateEmailDto) {
-    return await this.userService.duplicateFindUserEmail(
-      duplicateEmailDto.email,
-    );
+  async duplicateCheckEmail(@Body() emailCheckDto: EmailCheckDto) {
+    return await this.userService.duplicateFindUserEmail(emailCheckDto.email);
+  }
+
+  //비밀번호 재설정 페이지 가입 이메일 체크
+  @Post('/subscribed/email')
+  async subscribedCheckEmail(@Body() emailCheckDto: EmailCheckDto) {
+    return await this.userService.findUserByEmail(emailCheckDto.email);
   }
 
   @Post('/signup')
