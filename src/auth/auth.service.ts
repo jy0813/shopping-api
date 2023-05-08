@@ -28,7 +28,8 @@ export class AuthService {
   async createUserByEmail(creatUserDto: CreateUserDto) {
     const newUser = await this.userService.createUser(creatUserDto);
     // password는 undefined로 한다.(노출 x)
-    newUser.password = undefined;
+    // 0509 삭제
+    // newUser.password = undefined;
     return newUser;
   }
 
