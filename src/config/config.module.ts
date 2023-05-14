@@ -14,6 +14,9 @@ import * as Joi from '@hapi/joi';
         // JWT Token 환경변수 타입 체크
         JWT_ACCESSTOKEN_SECRET: Joi.string().required(),
         JWT_ACCESSTOKEN_EXPIRATION_TIME: Joi.string().required(),
+        // JWT Refresh Toekn
+        JWT_REFRESHTOKEN_SECRET: Joi.string().required(),
+        JWT_REFRESHTOKEN_EXPIRATION_TIME: Joi.string().required(),
         // JWT Email 환경변수 타입 체크
         JWT_VERIFICATION_TOKEN_SECRET: Joi.string().required(),
         JWT_VERIFICATION_TOKEN_EXPIRATION_TIME: Joi.string().required(),

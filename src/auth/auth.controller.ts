@@ -82,8 +82,15 @@ export class AuthController {
   @Post('/login')
   async loggedInUser(@Req() req: RequestWithUser) {
     const { user } = req;
-    const token = await this.authService.generateAccessToken(user.id);
-    return { user, token };
+    const accessTokenCookie = await this.authService.generateAccessToken(
+      user.id,
+    );
+    req.res.setHeader('Set-Cookie', accessTokenCookie);
+    // const {
+    //   cookie: refreshTokenCookie,
+    //   token: refreshToken
+    // } = await this.authService.generateRefreshToken(user.id)
+    return { user };
   }
 
   // @Post('/login')
