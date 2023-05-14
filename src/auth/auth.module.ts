@@ -8,6 +8,7 @@ import { LocalAuthStrategy } from './strategies/local-auth.strategy';
 import { JwtAuthStrategy } from './strategies/jwt-auth.strategy';
 import { EmailModule } from '../email/email.module';
 import { SmsModule } from '../sms/sms.module';
+import { KakaoAuthStrategy } from './strategies/kakao-auth.strategy';
 
 @Module({
   // user 에 관한 entity 및 service import 로 이용가능
@@ -23,6 +24,11 @@ import { SmsModule } from '../sms/sms.module';
   ],
   controllers: [AuthController],
   // 검증할때 사용하는 함수를 등록
-  providers: [AuthService, LocalAuthStrategy, JwtAuthStrategy],
+  providers: [
+    AuthService,
+    LocalAuthStrategy,
+    JwtAuthStrategy,
+    KakaoAuthStrategy,
+  ],
 })
 export class AuthModule {}

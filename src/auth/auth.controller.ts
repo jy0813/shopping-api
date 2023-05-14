@@ -6,6 +6,8 @@ import {
   Req,
   Get,
   Put,
+  HttpStatus,
+  HttpCode,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
@@ -17,6 +19,7 @@ import { UserService } from '../user/user.service';
 import { EmailCheckDto } from '../user/dto/email-check.dto';
 import { ConfigService } from '@nestjs/config';
 import { SmsService } from '../sms/sms.service';
+import KakaoAuthGuard from './guard/kakao-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -168,4 +171,15 @@ export class AuthController {
     req.res.setHeader('Set-Cookie', this.authService.getCookieForLogOut());
     return 'logout';
   }
+  @HttpCode(200)
+  @Get('/kakao')
+  @UseGuards(KakaoAuthGuard)
+  async kakaoLogin() {
+    return HttpStatus.OK;
+  }
+
+  @HttpCode(200)
+  @Get('/kakao/callback')
+  @UseGuards(KakaoAuthGuard)
+  async kakaoLoginCallback(@Req() req: RequestWithUser) {}
 }

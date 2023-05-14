@@ -34,6 +34,10 @@ import * as Joi from '@hapi/joi';
         TWILIO_AUTH_TOKEN: Joi.string().required(),
         TWILIO_VERIFICATION_SERVICE_SID: Joi.string().required(),
         TWILIO_PHONE_NUMBER: Joi.string().required(),
+        // 카카오 환경번수
+        KAKAO_CLIENT_ID: Joi.string().required(),
+        KAKAO_CALLBACK_URL: Joi.string().required(),
+        KAKAO_CLIENT_SECRET: Joi.string().required(),
       }),
     }),
   ],
