@@ -80,4 +80,11 @@ export class UserService {
       },
     );
   }
+
+  async setCurrentRefreshToken(refreshToken: string, userId: string) {
+    const currentHashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+    await this.userRepo.update(userId, {
+      currentHashedRefreshToken,
+    });
+  }
 }

@@ -31,6 +31,11 @@ export class User extends BaseEntity {
   })
   public isEmailConfirm: boolean;
 
+  // 임시용 redis 작업 시 걷어낼거
+  @Column({ nullable: true })
+  @Exclude()
+  public currentHashedRefreshToken?: string;
+
   // @Column()
   // public tempNumber: number;
 

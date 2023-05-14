@@ -85,7 +85,12 @@ export class AuthController {
     const accessTokenCookie = await this.authService.generateAccessToken(
       user.id,
     );
-    req.res.setHeader('Set-Cookie', accessTokenCookie);
+    const refreshTokenCookie = await this.authService.generateRefreshToken(
+      user.id,
+    );
+
+    await this.userService.setCurrentRefreshToken(refreshTokenCookie, user.id);
+    req.res.setHeader('Set-Cookie', [accessTokenCookie, refreshTokenCookie]);
     // const {
     //   cookie: refreshTokenCookie,
     //   token: refreshToken
@@ -155,5 +160,12 @@ export class AuthController {
   @Post('/sms/check')
   async checkSMS(@Body('phone') phone: string, @Body('code') code: string) {
     return this.authService.checkSMS(phone, code);
+  }
+
+  @Get('/logout')
+  @UseGuards(JwtAuthGuard)
+  async logout(@Req() req: RequestWithUser) {
+    req.res.setHeader('Set-Cookie', this.authService.getCookieForLogOut());
+    return 'logout';
   }
 }

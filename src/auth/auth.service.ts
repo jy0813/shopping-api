@@ -63,7 +63,7 @@ export class AuthService {
       secret: this.configService.get('JWT_ACCESSTOKEN_SECRET'),
       expiresIn: `${this.configService.get(
         'JWT_ACCESSTOKEN_EXPIRATION_TIME',
-      )}s`,
+      )}m`,
     });
     return `Authentication=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get(
       'JWT_ACCESSTOKEN_EXPIRATION_TIME',
@@ -76,12 +76,15 @@ export class AuthService {
       secret: this.configService.get('JWT_REFRESHTOKEN_SECRET'),
       expiresIn: `${this.configService.get(
         'JWT_REFRESHTOKEN_EXPIRATION_TIME',
-      )}s`,
+      )}d`,
     });
-    const cookie = `Refresh=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get(
+    return `Refresh=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get(
       'JWT_REFRESHTOKEN_EXPIRATION_TIME',
     )}`;
-    return { token, cookie };
+  }
+
+  public getCookieForLogOut() {
+    return `Authentication=; HttpOnly; Path=/; Max-Age=0`;
   }
 
   public sendEmail(email: string) {
