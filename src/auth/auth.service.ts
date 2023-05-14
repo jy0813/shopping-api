@@ -13,6 +13,7 @@ import { EmailService } from '../email/email.service';
 import { emailConfirm } from '../common/emailTemplates/emailConfirm';
 import { VerificationTokenPayloadInterface } from './interfaces/verificationTokenPayload.interface';
 import e from 'express';
+import { SmsService } from '../sms/sms.service';
 
 @Injectable()
 export class AuthService {
@@ -23,6 +24,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     private readonly emailService: EmailService,
+    private readonly smsService: SmsService,
   ) {}
 
   async createUserByEmail(creatUserDto: CreateUserDto) {
@@ -137,5 +139,13 @@ export class AuthService {
   public async changePasswordBeforeLogin(email: string, newPassword: string) {
     await this.userService.findUserByEmail(email);
     return this.userService.changePassword(email, newPassword);
+  }
+
+  public async sendSMS(phone: string) {
+    return await this.smsService.initiatePhoneNumberVerification(phone);
+  }
+
+  public async checkSMS(phone: string, code: string) {
+    return await this.smsService.confirmPhoneVerification(phone, code);
   }
 }

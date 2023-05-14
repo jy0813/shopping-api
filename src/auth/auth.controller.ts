@@ -16,6 +16,7 @@ import JwtAuthGuard from './guard/jwt-auth.guard';
 import { UserService } from '../user/user.service';
 import { EmailCheckDto } from '../user/dto/email-check.dto';
 import { ConfigService } from '@nestjs/config';
+import { SmsService } from '../sms/sms.service';
 
 @Controller('auth')
 export class AuthController {
@@ -137,5 +138,15 @@ export class AuthController {
       this.configService.get('JWT_CHANGEPASSWORD_TOKEN_SECRET'),
     );
     return this.authService.changePasswordBeforeLogin(email, newPassword);
+  }
+
+  @Post('/sms/verification')
+  async sendSMS(@Body('phone') phone: string) {
+    return this.authService.sendSMS(phone);
+  }
+
+  @Post('/sms/check')
+  async checkSMS(@Body('phone') phone: string, @Body('code') code: string) {
+    return this.authService.checkSMS(phone, code);
   }
 }
