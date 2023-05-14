@@ -8,6 +8,7 @@ import { ProductModule } from './product/product.module';
 import { AuthModule } from './auth/auth.module';
 import { EmailModule } from './email/email.module';
 import { AppConfigModule } from './config/config.module';
+import { SmsModule } from './sms/sms.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { AppConfigModule } from './config/config.module';
     ProductModule,
     AuthModule,
     EmailModule,
+    SmsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
