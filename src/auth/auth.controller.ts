@@ -1,4 +1,12 @@
-import { Controller, Post, Body, UseGuards, Req, Get } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  Req,
+  Get,
+  Put,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { LoginUserDto } from '../user/dto/login-user.dto';
@@ -7,12 +15,14 @@ import { RequestWithUser } from './interfaces/requestWithUser';
 import JwtAuthGuard from './guard/jwt-auth.guard';
 import { UserService } from '../user/user.service';
 import { EmailCheckDto } from '../user/dto/email-check.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly userService: UserService,
+    private readonly configService: ConfigService,
   ) {}
 
   //이메일 중복체크
@@ -30,24 +40,40 @@ export class AuthController {
   @Post('/signup')
   // 사용자 body(입력 값)은 createUserDto에 입력값을 사용한다.
   async registerUser(@Body() createUserDto: CreateUserDto) {
-    await this.authService.sendEmailConfirm(
-      createUserDto.email,
-      '이메일 confirm',
-    );
+    // 회원 가입 시 이메일 컨펌 환경이 필요할때,
+    // await this.authService.sendEmailWithToken(
+    //   createUserDto.email,
+    //   '이메일 confirm',
+    //   {
+    //     secret: this.configService.get('JWT_VERIFICATION_TOKEN_SECRET'),
+    //     expiresIn: `${this.configService.get(
+    //       'JWT_VERIFICATION_TOKEN_EXPIRATION_TIME',
+    //     )}m`,
+    //   },
+    // );
     return await this.authService.createUserByEmail(createUserDto);
   }
 
-  @Post('/email/confirm')
-  async emailConfirm(@Body('token') token: string) {
-    const email = await this.authService.decodeConfirmaitonToken(token);
-    // isEmailConfirm false -> true
-    return this.authService.confirmEmail(email);
-  }
+  // 가입 후 이메일 확인
+  // @Post('/email/confirm')
+  // async emailConfirm(@Body('token') token: string) {
+  //   const email = await this.authService.decodeConfirmaitonToken(
+  //     token,
+  //     this.configService.get('JWT_VERIFICATION_TOKEN_SECRET'),
+  //   );
+  //   // isEmailConfirm false -> true
+  //   return this.authService.confirmEmail(email);
+  // }
 
   @Post('/email/resend')
   async resendEmail(@Body('email') email: string) {
     await this.userService.findUserByEmail(email);
-    return await this.authService.sendEmailConfirm(email, '이메일 재전송');
+    return await this.authService.sendEmailWithToken(email, '이메일 재전송', {
+      secret: this.configService.get('JWT_VERIFICATION_TOKEN_SECRET'),
+      expiresIn: `${this.configService.get(
+        'JWT_VERIFICATION_TOKEN_EXPIRATION_TIME',
+      )}m`,
+    });
   }
 
   // @UseGuards(AuthGuard('local')
@@ -93,6 +119,23 @@ export class AuthController {
 
   @Post('/find/password')
   async resetPassword(@Body('email') email: string) {
-    return await this.authService.sendEmailConfirm(email, '비밀번호 변경');
+    return await this.authService.sendEmailWithToken(email, '비밀번호 변경', {
+      secret: this.configService.get('JWT_CHANGEPASSWORD_TOKEN_SECRET'),
+      expiresIn: `${this.configService.get(
+        'JWT_CHANGEPASSWORD_TOKEN_EXPIRATION_TIME',
+      )}m`,
+    });
+  }
+  // 로그인 전 단계 패스워드 변경
+  @Put('/change/password')
+  async changePasswordBeforeLogin(
+    @Body('token') token: string,
+    @Body('newPassword') newPassword: string,
+  ) {
+    const email = await this.authService.decodeConfirmaitonToken(
+      token,
+      this.configService.get('JWT_CHANGEPASSWORD_TOKEN_SECRET'),
+    );
+    return this.authService.changePasswordBeforeLogin(email, newPassword);
   }
 }

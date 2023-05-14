@@ -74,14 +74,17 @@ export class AuthService {
     });
   }
 
-  public sendEmailConfirm(email: string, title: string) {
+  public sendEmailWithToken(email: string, title: string, tokenInfo: any) {
     const payload: VerificationTokenPayloadInterface = { email };
-    const token = this.jwtService.sign(payload, {
-      secret: this.configService.get('JWT_VERIFICATION_TOKEN_SECRET'),
-      expiresIn: `${this.configService.get(
-        'JWT_VERIFICATION_TOKEN_EXPIRATION_TIME',
-      )}s`,
-    });
+    // const token = this.jwtService.sign(payload, {
+    //   // secret: this.configService.get('JWT_VERIFICATION_TOKEN_SECRET'),
+    //   // expiresIn: `${this.configService.get(
+    //   //   'JWT_VERIFICATION_TOKEN_EXPIRATION_TIME',
+    //   // )}s`,
+    //   secret: tokenSecret,
+    //   expiresIn: tokenExpTime,
+    // });
+    const token = this.jwtService.sign(payload, tokenInfo);
 
     const url = `${this.configService.get(
       'FRONTEND_DEFAULT_URL',
@@ -104,10 +107,11 @@ export class AuthService {
     return randomNumber;
   }
 
-  public async decodeConfirmaitonToken(token: string) {
+  public async decodeConfirmaitonToken(token: string, tokenSecret: string) {
     try {
       const payload = await this.jwtService.verify(token, {
-        secret: this.configService.get('JWT_VERIFICATION_TOKEN_SECRET'),
+        // secret: this.configService.get('JWT_VERIFICATION_TOKEN_SECRET'),
+        secret: tokenSecret,
       });
       if (typeof payload === 'object' && 'email' in payload) {
         return payload.email;
@@ -121,11 +125,17 @@ export class AuthService {
     }
   }
 
+  //email 컨펌 함수
   public async confirmEmail(email: string) {
     const user = await this.userService.findUserByEmail(email);
     if (user.isEmailConfirm) {
       throw new BadRequestException('email is already confirm');
     }
     return this.userService.markEmailAsConfirmed(email);
+  }
+
+  public async changePasswordBeforeLogin(email: string, newPassword: string) {
+    await this.userService.findUserByEmail(email);
+    return this.userService.changePassword(email, newPassword);
   }
 }

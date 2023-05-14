@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UserService {
@@ -65,6 +66,17 @@ export class UserService {
       { email },
       {
         isEmailConfirm: true,
+      },
+    );
+  }
+
+  async changePassword(email: string, newPassword: string) {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    return this.userRepo.update(
+      { email },
+      {
+        password: hashedPassword,
       },
     );
   }
