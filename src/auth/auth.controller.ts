@@ -85,12 +85,8 @@ export class AuthController {
   @Post('/login')
   async loggedInUser(@Req() req: RequestWithUser) {
     const { user } = req;
-    const accessTokenCookie = await this.authService.generateAccessToken(
-      user.id,
-    );
-    const refreshTokenCookie = await this.authService.generateRefreshToken(
-      user.id,
-    );
+    const accessTokenCookie = this.authService.generateAccessToken(user.id);
+    const refreshTokenCookie = this.authService.generateRefreshToken(user.id);
 
     await this.userService.setCurrentRefreshToken(refreshTokenCookie, user.id);
     req.res.setHeader('Set-Cookie', [accessTokenCookie, refreshTokenCookie]);
