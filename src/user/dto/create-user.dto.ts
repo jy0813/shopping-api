@@ -6,6 +6,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { ProviderEnum } from '../entities/provider.enum';
 
 export class CreateUserDto {
   @IsString()

@@ -192,5 +192,8 @@ export class AuthController {
   @HttpCode(200)
   @Get('/kakao/callback')
   @UseGuards(KakaoAuthGuard)
-  async kakaoLoginCallback(@Req() req: RequestWithUser) {}
+  async kakaoLoginCallback(@Req() req: RequestWithUser) {
+    console.log(req, 'req');
+    req.res.setHeader('Set-Cookie', []);
+  }
 }

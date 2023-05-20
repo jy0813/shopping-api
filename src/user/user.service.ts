@@ -4,6 +4,7 @@ import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
+import { ProviderEnum } from './entities/provider.enum';
 
 @Injectable()
 export class UserService {
@@ -55,6 +56,16 @@ export class UserService {
     return newUser;
   }
 
+  async socialAuth(email: string, userName: string, provider: ProviderEnum) {
+    const newUser = await this.userRepo.create({
+      email,
+      userName,
+      provider,
+    });
+    await this.userRepo.save(newUser);
+    return newUser;
+  }
+
   async getAllUsers() {
     const users = await this.userRepo.find();
     return users;
@@ -89,14 +100,12 @@ export class UserService {
   }
 
   async getUserIfRefreshTokenMatches(refreshToken: string, userId: string) {
-    console.log('-----------------------------------');
     const user = await this.findUserById(userId);
     console.log(user);
     const isRefreshTokenMatch = await bcrypt.compare(
       refreshToken,
       user.currentHashedRefreshToken,
     );
-    console.log(isRefreshTokenMatch, 'ddddddddddddddddddrs');
     if (isRefreshTokenMatch) return user;
   }
 }

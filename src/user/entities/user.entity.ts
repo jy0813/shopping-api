@@ -3,6 +3,7 @@ import { BaseEntity } from '../../common/entity/base.entity';
 import { InternalServerErrorException } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { Exclude } from 'class-transformer';
+import { ProviderEnum } from './provider.enum';
 
 @Entity()
 export class User extends BaseEntity {
@@ -35,6 +36,13 @@ export class User extends BaseEntity {
   @Column({ nullable: true })
   @Exclude()
   public currentHashedRefreshToken?: string;
+
+  @Column({
+    type: 'enum',
+    enum: ProviderEnum,
+    default: ProviderEnum.LOCAL,
+  })
+  public provider: ProviderEnum;
 
   // @Column()
   // public tempNumber: number;

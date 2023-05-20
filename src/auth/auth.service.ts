@@ -14,6 +14,7 @@ import { emailConfirm } from '../common/emailTemplates/emailConfirm';
 import { VerificationTokenPayloadInterface } from './interfaces/verificationTokenPayload.interface';
 import e from 'express';
 import { SmsService } from '../sms/sms.service';
+import { ProviderEnum } from '../user/entities/provider.enum';
 
 @Injectable()
 export class AuthService {
@@ -168,5 +169,21 @@ export class AuthService {
 
   public async checkSMS(phone: string, code: string) {
     return await this.smsService.confirmPhoneVerification(phone, code);
+  }
+
+  public async snsAuthUser(
+    email: string,
+    userName: string,
+    provider: ProviderEnum,
+  ) {
+    // // 이메일 존재하면 로그인
+    // const user = await this.userService.findUserByEmail(email);
+    // // 이메일 존재하지 않으면 회원가입
+    // if (!user) {
+    //   return await this.userService.socialAuth(email, userName, provider);
+    // }
+    // const accessTokenCookie = await this.generateAccessToken(user.id);
+    // const { cookie: refreshTokenCookie, token: refreshToken } = await this.generateRefreshToken(user.id);
+    // return
   }
 }
