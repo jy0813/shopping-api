@@ -4,6 +4,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { Exclude } from 'class-transformer';
 import { ProviderEnum } from './provider.enum';
+import { RoleEnum } from './role.enum';
 
 @Entity()
 export class User extends BaseEntity {
@@ -43,6 +44,14 @@ export class User extends BaseEntity {
     default: ProviderEnum.LOCAL,
   })
   public provider: ProviderEnum;
+
+  @Column({
+    type: 'enum',
+    enum: RoleEnum,
+    array: true,
+    default: [RoleEnum.USER],
+  })
+  public roles: RoleEnum[];
 
   // @Column()
   // public tempNumber: number;
