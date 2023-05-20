@@ -5,10 +5,11 @@ import { UserModule } from '../user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
 import { LocalAuthStrategy } from './strategies/local-auth.strategy';
-import { JwtAuthStrategy } from './strategies/jwt-auth.strategy';
+import { JwtAccessTokenStrategy } from './strategies/jwt-access-token.strategy';
 import { EmailModule } from '../email/email.module';
 import { SmsModule } from '../sms/sms.module';
 import { KakaoAuthStrategy } from './strategies/kakao-auth.strategy';
+import { JwtRefreshTokenStrategy } from './strategies/jwt-refresh-token.strategy';
 
 @Module({
   // user 에 관한 entity 및 service import 로 이용가능
@@ -27,8 +28,9 @@ import { KakaoAuthStrategy } from './strategies/kakao-auth.strategy';
   providers: [
     AuthService,
     LocalAuthStrategy,
-    JwtAuthStrategy,
+    JwtAccessTokenStrategy,
     KakaoAuthStrategy,
+    JwtRefreshTokenStrategy,
   ],
 })
 export class AuthModule {}

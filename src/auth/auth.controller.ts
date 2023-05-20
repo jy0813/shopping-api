@@ -14,12 +14,13 @@ import { CreateUserDto } from '../user/dto/create-user.dto';
 import { LoginUserDto } from '../user/dto/login-user.dto';
 import { LocalAuthGuard } from './guard/local-auth.guard';
 import { RequestWithUser } from './interfaces/requestWithUser';
-import JwtAuthGuard from './guard/jwt-auth.guard';
+import JwtAccessTokenGuard from './guard/jwt-access-token.guard';
 import { UserService } from '../user/user.service';
 import { EmailCheckDto } from '../user/dto/email-check.dto';
 import { ConfigService } from '@nestjs/config';
 import { SmsService } from '../sms/sms.service';
 import KakaoAuthGuard from './guard/kakao-auth.guard';
+import JwtRefreshTokenGuard from './guard/jwt-refresh-token.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -85,16 +86,30 @@ export class AuthController {
   @Post('/login')
   async loggedInUser(@Req() req: RequestWithUser) {
     const { user } = req;
-    const accessTokenCookie = this.authService.generateAccessToken(user.id);
-    const refreshTokenCookie = this.authService.generateRefreshToken(user.id);
+    const accessTokenCookie = await this.authService.generateAccessToken(
+      user.id,
+    );
+    const { cookie: refreshTokenCookie, token: refreshToken } =
+      await this.authService.generateRefreshToken(user.id);
 
-    await this.userService.setCurrentRefreshToken(refreshTokenCookie, user.id);
+    await this.userService.setCurrentRefreshToken(refreshToken, user.id);
     req.res.setHeader('Set-Cookie', [accessTokenCookie, refreshTokenCookie]);
     // const {
     //   cookie: refreshTokenCookie,
     //   token: refreshToken
     // } = await this.authService.generateRefreshToken(user.id)
     return { user };
+  }
+
+  @UseGuards(JwtRefreshTokenGuard)
+  @Get('/refresh')
+  async refreshTokenReGenerate(@Req() req: RequestWithUser) {
+    const { user } = req;
+    const accessTokenCookie = await this.authService.generateAccessToken(
+      user.id,
+    );
+    req.res.setHeader('Set-Cookie', accessTokenCookie);
+    return user;
   }
 
   // @Post('/login')
@@ -108,7 +123,7 @@ export class AuthController {
   //   return { user, token };
   // }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAccessTokenGuard)
   @Get('/userInfo')
   async getUserInfo(@Req() req: RequestWithUser) {
     return req.user;
@@ -162,7 +177,7 @@ export class AuthController {
   }
 
   @Get('/logout')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAccessTokenGuard)
   async logout(@Req() req: RequestWithUser) {
     req.res.setHeader('Set-Cookie', this.authService.getCookieForLogOut());
     return 'logout';

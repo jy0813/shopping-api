@@ -8,7 +8,7 @@ import { TokenPayloadInterface } from '../interfaces/tokenPayload.interface';
 import { Strategy } from 'passport-jwt';
 
 @Injectable()
-export class JwtAuthStrategy extends PassportStrategy(Strategy) {
+export class JwtAccessTokenStrategy extends PassportStrategy(Strategy) {
   constructor(
     private readonly configService: ConfigService,
     private readonly userService: UserService,
