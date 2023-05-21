@@ -86,11 +86,9 @@ export class AuthController {
   @Post('/login')
   async loggedInUser(@Req() req: RequestWithUser) {
     const { user } = req;
-    const accessTokenCookie = await this.authService.generateAccessToken(
-      user.id,
-    );
+    const accessTokenCookie = this.authService.generateAccessToken(user.id);
     const { cookie: refreshTokenCookie, token: refreshToken } =
-      await this.authService.generateRefreshToken(user.id);
+      this.authService.generateRefreshToken(user.id);
 
     await this.userService.setCurrentRefreshToken(refreshToken, user.id);
     req.res.setHeader('Set-Cookie', [accessTokenCookie, refreshTokenCookie]);
@@ -105,9 +103,7 @@ export class AuthController {
   @Get('/refresh')
   async refreshTokenReGenerate(@Req() req: RequestWithUser) {
     const { user } = req;
-    const accessTokenCookie = await this.authService.generateAccessToken(
-      user.id,
-    );
+    const accessTokenCookie = this.authService.generateAccessToken(user.id);
     req.res.setHeader('Set-Cookie', accessTokenCookie);
     return user;
   }
@@ -180,7 +176,7 @@ export class AuthController {
   @UseGuards(JwtAccessTokenGuard)
   async logout(@Req() req: RequestWithUser) {
     req.res.setHeader('Set-Cookie', this.authService.getCookieForLogOut());
-    return 'logout';
+    return true;
   }
   @HttpCode(200)
   @Get('/kakao')
