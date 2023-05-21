@@ -34,24 +34,26 @@ export class KakaoAuthStrategy extends PassportStrategy(
      * 0520
      */
 
+    // const user = await this.userService.findUserByEmail(email);
+    // const accessTokenCookie = this.authService.generateAccessToken(user.id);
+    // const { cookie: refreshTokenCookie, token: localRefreshToken } =
+    //   this.authService.generateRefreshToken(user.id);
+    // await this.userService.setCurrentRefreshToken(localRefreshToken, user.id);    // email 체크 회원가입
+    //     if (!user) {
+    //       const newUser = await this.userService.socialAuth(
+    //         email,
+    //         nickname,
+    //         ProviderEnum.KAKAO,
+    //       );
+    //       return { newUser, accessTokenCookie, refreshTokenCookie };
+    //     }
+    //     // email 로그인
+    //     return { user, accessTokenCookie, refreshTokenCookie };
+    console.log(accessToken);
+    console.log(refreshToken);
     const { email } = profile._json.kakao_account;
     const { nickname, profile_image } = profile._json.properties;
     console.log(nickname, profile_image, email);
     const user = await this.userService.findUserByEmail(email);
-    const accessTokenCookie = this.authService.generateAccessToken(user.id);
-    const { cookie: refreshTokenCookie, token: localRefreshToken } =
-      this.authService.generateRefreshToken(user.id);
-    await this.userService.setCurrentRefreshToken(localRefreshToken, user.id);
-    // email 체크 회원가입
-    if (!user) {
-      const newUser = await this.userService.socialAuth(
-        email,
-        nickname,
-        ProviderEnum.KAKAO,
-      );
-      return { newUser, accessTokenCookie, refreshTokenCookie };
-    }
-    // email 로그인
-    return { user, accessTokenCookie, refreshTokenCookie };
   }
 }
