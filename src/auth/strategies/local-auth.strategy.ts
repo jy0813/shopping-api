@@ -3,13 +3,13 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';
 import { AuthService } from '../auth.service';
 import { User } from '../../user/entities/user.entity';
-import { ProviderEnum } from '../../user/entities/provider.enum';
+import { Provider } from '../../user/entities/provider.enum';
 
 @Injectable()
 // email, password 검증 라이브러리
 export class LocalAuthStrategy extends PassportStrategy(
   Strategy,
-  ProviderEnum.LOCAL,
+  Provider.LOCAL,
 ) {
   constructor(private readonly authService: AuthService) {
     // 검증기준

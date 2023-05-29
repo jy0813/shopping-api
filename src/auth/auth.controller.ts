@@ -205,8 +205,18 @@ export class AuthController {
   @Get('/kakao/callback')
   @UseGuards(KakaoAuthGuard)
   async kakaoLoginCallback(@Req() req: RequestWithUser) {
-    console.log(req, 'req');
-    return req.user;
+    const { user } = req;
+    const accessTokenCookie = this.authService.generateAccessToken(user.id);
+    const { cookie: refreshTokenCookie, token: refreshToken } =
+      this.authService.generateRefreshToken(user.id);
+
+    await this.userService.setCurrentRefreshToken(refreshToken, user.id);
+    req.res.setHeader('Set-Cookie', [accessTokenCookie, refreshTokenCookie]);
+    // const {
+    //   cookie: refreshTokenCookie,
+    //   token: refreshToken
+    // } = await this.authService.generateRefreshToken(user.id)
+    return { user };
     // req.res.setHeader('Set-Cookie', []);
   }
 }

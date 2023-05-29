@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { EmailModule } from './email/email.module';
 import { AppConfigModule } from './config/config.module';
 import { SmsModule } from './sms/sms.module';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { SmsModule } from './sms/sms.module';
     AuthModule,
     EmailModule,
     SmsModule,
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [AppService],

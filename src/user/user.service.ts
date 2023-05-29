@@ -4,7 +4,7 @@ import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
-import { ProviderEnum } from './entities/provider.enum';
+import { Provider } from './entities/provider.enum';
 
 @Injectable()
 export class UserService {
@@ -56,7 +56,7 @@ export class UserService {
     return newUser;
   }
 
-  async socialAuth(email: string, userName: string, provider: ProviderEnum) {
+  async socialAuth(email: string, userName: string, provider: Provider) {
     const newUser = await this.userRepo.create({
       email,
       userName,

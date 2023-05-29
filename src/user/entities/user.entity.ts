@@ -1,14 +1,14 @@
 import { BeforeInsert, Column, Entity } from 'typeorm';
 import { BaseEntity } from '../../common/entity/base.entity';
 import { InternalServerErrorException } from '@nestjs/common';
-import * as bcrypt from 'bcryptjs';
 import { Exclude } from 'class-transformer';
-import { ProviderEnum } from './provider.enum';
+import { Provider } from './provider.enum';
 import { RoleEnum } from './role.enum';
+import * as bcrypt from 'bcryptjs';
 
 @Entity()
 export class User extends BaseEntity {
-  @Column({ unique: true })
+  @Column()
   public userName: string;
 
   @Column({ unique: true })
@@ -40,10 +40,10 @@ export class User extends BaseEntity {
 
   @Column({
     type: 'enum',
-    enum: ProviderEnum,
-    default: ProviderEnum.LOCAL,
+    enum: Provider,
+    default: Provider.LOCAL,
   })
-  public provider: ProviderEnum;
+  public provider: Provider;
 
   @Column({
     type: 'enum',
@@ -60,9 +60,13 @@ export class User extends BaseEntity {
   @BeforeInsert()
   async hashPassword() {
     try {
-      const salt = await bcrypt.genSalt(10);
-      // 위에 있는 password 를 bcrypt 를 통하여 hash 하겠다.
-      this.password = await bcrypt.hash(this.password, salt);
+      if (this.provider !== Provider.LOCAL) {
+        return;
+      } else {
+        const salt = await bcrypt.genSalt(10);
+        // 위에 있는 password 를 bcrypt 를 통하여 hash 하겠다.
+        this.password = await bcrypt.hash(this.password, salt);
+      }
     } catch (err) {
       throw new InternalServerErrorException();
     }

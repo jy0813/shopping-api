@@ -6,7 +6,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { ProviderEnum } from '../entities/provider.enum';
+import { Provider } from '../entities/provider.enum';
 
 export class CreateUserDto {
   @IsString()
@@ -23,9 +23,11 @@ export class CreateUserDto {
   @Matches(
     /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%^&*()\-_=+[\]{};:'",.<>/?]{8,}$/,
   )
-  password: string;
+  password?: string;
 
-  isMarketing: boolean;
+  isMarketing?: boolean;
 
-  isEvent: boolean;
+  isEvent?: boolean;
+
+  provider?: Provider;
 }

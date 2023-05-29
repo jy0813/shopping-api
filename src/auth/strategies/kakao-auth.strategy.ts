@@ -1,15 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-kakao';
 import { ConfigService } from '@nestjs/config';
 import { UserService } from '../../user/user.service';
-import { ProviderEnum } from '../../user/entities/provider.enum';
+import { Provider } from '../../user/entities/provider.enum';
 import { AuthService } from '../auth.service';
 
 @Injectable()
 export class KakaoAuthStrategy extends PassportStrategy(
   Strategy,
-  ProviderEnum.KAKAO,
+  Provider.KAKAO,
 ) {
   constructor(
     private readonly cfg: ConfigService,
@@ -43,17 +43,35 @@ export class KakaoAuthStrategy extends PassportStrategy(
     //       const newUser = await this.userService.socialAuth(
     //         email,
     //         nickname,
-    //         ProviderEnum.KAKAO,
+    //         Provider.KAKAO,
     //       );
     //       return { newUser, accessTokenCookie, refreshTokenCookie };
     //     }
     //     // email 로그인
     //     return { user, accessTokenCookie, refreshTokenCookie };
-    console.log(accessToken);
-    console.log(refreshToken);
     const { email } = profile._json.kakao_account;
-    const { nickname, profile_image } = profile._json.properties;
-    console.log(nickname, profile_image, email);
-    const user = await this.userService.findUserByEmail(email);
+    const { username } = profile;
+    try {
+      // 로그인
+      const user = await this.userService.findUserByEmail(email);
+      if (user.provider !== Provider.KAKAO) {
+        throw new HttpException(
+          `You are already subscribed to ${user.provider}`,
+          HttpStatus.CONFLICT,
+        );
+      }
+      done(null, user);
+    } catch (err) {
+      if (err.status === 404) {
+        // 회원가입
+        const newUser = await this.userService.createUser({
+          provider: Provider.KAKAO,
+          userName: username,
+          email,
+        });
+
+        done(null, newUser);
+      }
+    }
   }
 }
