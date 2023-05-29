@@ -8,6 +8,9 @@ import {
   Put,
   HttpStatus,
   HttpCode,
+  Inject,
+  CACHE_MANAGER,
+  HttpException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
@@ -21,6 +24,7 @@ import { ConfigService } from '@nestjs/config';
 import { SmsService } from '../sms/sms.service';
 import KakaoAuthGuard from './guard/kakao-auth.guard';
 import JwtRefreshTokenGuard from './guard/jwt-refresh-token.guard';
+import { Cache } from 'cache-manager';
 
 @Controller('auth')
 export class AuthController {
@@ -28,6 +32,7 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly userService: UserService,
     private readonly configService: ConfigService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   //이메일 중복체크
@@ -131,6 +136,17 @@ export class AuthController {
     return { number };
   }
 
+  @Post('/email/confirm')
+  async confirmEmail(@Body('email') email: string, @Body('code') code: string) {
+    const redisCode = await this.cacheManager.get(email);
+    if (JSON.stringify(redisCode) !== code) {
+      throw new HttpException('code do not matching', HttpStatus.BAD_REQUEST);
+    } else {
+      await this.cacheManager.del(email);
+      return 'ok';
+    }
+  }
+
   @Post('/email/resend/number')
   async resendEmailOfNumber(@Body('email') email: string) {
     const number = await this.authService.sendEmailOfRendomNumber(email);
@@ -190,6 +206,7 @@ export class AuthController {
   @UseGuards(KakaoAuthGuard)
   async kakaoLoginCallback(@Req() req: RequestWithUser) {
     console.log(req, 'req');
-    req.res.setHeader('Set-Cookie', []);
+    return req.user;
+    // req.res.setHeader('Set-Cookie', []);
   }
 }

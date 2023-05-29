@@ -38,6 +38,10 @@ import * as Joi from '@hapi/joi';
         KAKAO_CLIENT_ID: Joi.string().required(),
         KAKAO_CALLBACK_URL: Joi.string().required(),
         KAKAO_CLIENT_SECRET: Joi.string().required(),
+        // redis 환경변수
+        REDIS_HOST: Joi.string().required(),
+        REDIS_PORT: Joi.number().required(),
+        REDIS_TTL: Joi.string().required(),
       }),
     }),
   ],

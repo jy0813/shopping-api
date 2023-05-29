@@ -1,7 +1,9 @@
 import {
   BadRequestException,
+  CACHE_MANAGER,
   HttpException,
   HttpStatus,
+  Inject,
   Injectable,
 } from '@nestjs/common';
 import { UserService } from '../user/user.service';
@@ -12,9 +14,9 @@ import { ConfigService } from '@nestjs/config';
 import { EmailService } from '../email/email.service';
 import { emailConfirm } from '../common/emailTemplates/emailConfirm';
 import { VerificationTokenPayloadInterface } from './interfaces/verificationTokenPayload.interface';
-import e from 'express';
 import { SmsService } from '../sms/sms.service';
-import { ProviderEnum } from '../user/entities/provider.enum';
+import { Provider } from '../user/entities/provider.enum';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class AuthService {
@@ -26,14 +28,37 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly emailService: EmailService,
     private readonly smsService: SmsService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   async createUserByEmail(creatUserDto: CreateUserDto) {
-    const newUser = await this.userService.createUser(creatUserDto);
-    // password는 undefined로 한다.(노출 x)
-    // 0509 삭제
-    // newUser.password = undefined;
-    return newUser;
+    try {
+      const newUser = await this.userService.createUser({
+        ...creatUserDto,
+        provider: Provider.LOCAL,
+      });
+      // password는 undefined로 한다.(노출 x)
+      // 0509 삭제
+      // newUser.password = undefined;
+      return newUser;
+    } catch (err) {
+      if (err?.code === 23505) {
+        throw new HttpException(
+          'user with that email already exists',
+          HttpStatus.BAD_REQUEST,
+        );
+      } else if (err?.code === 23502) {
+        throw new HttpException(
+          'please check not null body value',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      console.log(err);
+      throw new HttpException(
+        'something went wrong',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   // 로그인 함수
@@ -49,6 +74,7 @@ export class AuthService {
         throw new HttpException('Password do Not Match', HttpStatus.CONFLICT);
       }
       user.password = undefined;
+      await this.cacheManager.set(user.id, user);
       return user;
     } catch (err) {
       throw new HttpException(
@@ -128,6 +154,7 @@ export class AuthService {
       subject: 'Email Confirmaiton',
       text: `${randomNumber}`,
     });
+    await this.cacheManager.set(email, randomNumber);
     return randomNumber;
   }
 
@@ -174,7 +201,7 @@ export class AuthService {
   public async snsAuthUser(
     email: string,
     userName: string,
-    provider: ProviderEnum,
+    provider: Provider,
   ) {
     // // 이메일 존재하면 로그인
     // const user = await this.userService.findUserByEmail(email);
